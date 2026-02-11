@@ -1,182 +1,182 @@
-# 📖 VocabMaster — İngilizce-Türkmence Kelime Öğrenme Uygulaması
+# 📖 VocabMaster — English-Turkmen Vocabulary Learning App
 
-> **Sıfırdan canlı siteye adım adım kurulum rehberi**
-
----
-
-## 📑 İçindekiler
-
-- [1. Proje Hakkında](#1--proje-hakkında)
-- [2. Ön Gereksinimler](#2--ön-gereksinimler)
-- [3. Adım 1: Gemini API Key Alma](#3--adım-1-gemini-api-key-alma)
-- [4. Adım 2: Cloudflare Worker Oluşturma (API Proxy)](#4--adım-2-cloudflare-worker-oluşturma-api-proxy)
-  - [Yöntem A: Cloudflare Dashboard Üzerinden (Kolay Yol)](#yöntem-a-cloudflare-dashboard-üzerinden-kolay-yol)
-  - [Yöntem B: Wrangler CLI ile (Gelişmiş Yol)](#yöntem-b-wrangler-cli-ile-gelişmiş-yol)
-- [5. Adım 3: API Key'i Worker'a Ekleme](#5--adım-3-api-keyi-workera-ekleme)
-- [6. Adım 4: Custom Domain Bağlama (en-api.poofs.app)](#6--adım-4-custom-domain-bağlama-en-apipoofapp)
-- [7. Adım 5: Proje Kodunda API URL'ini Güncelleme](#7--adım-5-proje-kodunda-api-urlini-güncelleme)
-- [8. Adım 6: Yerel Test (Localhost)](#8--adım-6-yerel-test-localhost)
-- [9. Adım 7: Siteyi Cloudflare Pages'a Yayınlama](#9--adım-7-siteyi-cloudflare-pagesa-yayınlama)
-  - [Yöntem A: Git ile Otomatik Deploy (Önerilen)](#yöntem-a-git-ile-otomatik-deploy-önerilen)
-  - [Yöntem B: Doğrudan Upload](#yöntem-b-doğrudan-upload)
-- [10. Adım 8: Custom Domain Bağlama (poofs.app)](#10--adım-8-custom-domain-bağlama-poofapp)
-- [11. Adım 9: Son Kontroller](#11--adım-9-son-kontroller)
-- [12. Sorun Giderme](#12--sorun-giderme)
-- [13. Güvenlik Notları](#13--güvenlik-notları)
-- [14. Proje Yapısı](#14--proje-yapısı)
-- [15. Güncelleme Nasıl Yapılır](#15--güncelleme-nasıl-yapılır)
+> **Step-by-step setup guide from scratch to live site**
 
 ---
 
-## 1. 📌 Proje Hakkında
+## 📑 Table of Contents
 
-**VocabMaster**, İngilizce-Türkmence kelime öğrenmek için tasarlanmış modern bir web uygulamasıdır. Excel dosyasından kelimeleri yükleyerek, yapay zeka (Google Gemini) ile otomatik kategorilendirme yapabilir, flashcard'lar ile çalışabilir, kendinizi test edebilir ve öğrenme sürecinizi dashboard üzerinden takip edebilirsiniz.
-
-### ✨ Özellikler
-
-| Özellik | Açıklama |
-|---------|----------|
-| 📤 **Excel Yükleme** | `.xlsx` veya `.xls` formatında kelime dosyası yükleme. Akıllı sütun algılama — hangi sütunun İngilizce, Transkripsiyon ve Türkmence olduğunu otomatik tespit eder. Rusça, Japonca, numara sütunlarını otomatik atlar. |
-| 🤖 **Gemini Kategorilendirme** | Yüklenen kelimeleri Google Gemini 2.5 Flash yapay zekası ile otomatik olarak kategorilere ayırır (İsimler, Fiiller, Sıfatlar, Günlük Yaşam, Duygular vb.) ve her kelime için 5 örnek cümle oluşturur. |
-| 📚 **Kelime Tablosu** | Gelişmiş filtreleme (arama, kategori, öğrenilme durumu, kelime uzunluğu), sıralama (A-Z, Z-A, en kısa, en uzun, kategoriye göre vb.) ve sayfalama özellikleri ile tüm kelimeleri görüntüleme. |
-| 🃏 **Flashcard'lar** | Kartları çevirerek kelimeleri öğrenme. Kategori bazlı filtreleme, klavye kısayolları (← → Space), öğrenildi işaretleme. |
-| 📝 **Test Modu** | İki yönlü test: İngilizce→Türkmence veya Türkmence→İngilizce. Yanlış cevaplanan kelimeler otomatik olarak "öğrenilmedi" olarak işaretlenir. |
-| 🤖 **AI Geri Bildirim** | Test sonuçları Gemini yapay zekasına gönderilir ve Türkmence dilinde kişiselleştirilmiş geri bildirim, tavsiyeler ve analiz alırsınız. |
-| 📊 **Dashboard** | Toplam kelime sayısı, öğrenilen kelime oranı, test geçmişi, kategori bazlı ilerleme çubukları, skor grafiği, gün serisi (streak) ve tekrar edilmesi gereken kelimeler. |
-| 🌙 **Tema Desteği** | Açık (Light) ve Koyu (Dark) tema arasında geçiş. |
-| 💾 **Veri Yönetimi** | Verileri JSON olarak dışa/içe aktarma, tüm verileri temizleme. |
-| ⌨️ **Klavye Kısayolları** | Alt+U (Yükle), Alt+T (Test), Alt+D (Dashboard). |
-
-### 🛠️ Teknoloji Yığını
-
-| Teknoloji | Kullanım Amacı |
-|-----------|---------------|
-| **HTML5 / CSS3 / Vanilla JavaScript** | Frontend — hiçbir framework kullanılmadı, saf JavaScript |
-| **IndexedDB** | Tarayıcı tarafında veri depolama (kelimeler, testler, ayarlar) |
-| **Google Gemini 2.5 Flash API** | Kelime kategorilendirme ve test geri bildirimi |
-| **SheetJS (xlsx)** | Excel dosyalarını okuma ve ayrıştırma (CDN üzerinden) |
-| **Cloudflare Pages** | Frontend barındırma (hosting) |
-| **Cloudflare Workers** | API proxy — Gemini API anahtarını gizleme |
+- [1. About the Project](#1--about-the-project)
+- [2. Prerequisites](#2--prerequisites)
+- [3. Step 1: Getting a Gemini API Key](#3--step-1-getting-a-gemini-api-key)
+- [4. Step 2: Creating a Cloudflare Worker (API Proxy)](#4--step-2-creating-a-cloudflare-worker-api-proxy)
+  - [Method A: Via Cloudflare Dashboard (Easy Way)](#method-a-via-cloudflare-dashboard-easy-way)
+  - [Method B: Using Wrangler CLI (Advanced Way)](#method-b-using-wrangler-cli-advanced-way)
+- [5. Step 3: Adding the API Key to the Worker](#5--step-3-adding-the-api-key-to-the-worker)
+- [6. Step 4: Connecting a Custom Domain (en-api.yourdomain.com)](#6--step-4-connecting-a-custom-domain-en-apiyourdomaincom)
+- [7. Step 5: Updating the API URL in the Project Code](#7--step-5-updating-the-api-url-in-the-project-code)
+- [8. Step 6: Local Testing (Localhost)](#8--step-6-local-testing-localhost)
+- [9. Step 7: Publishing the Site to Cloudflare Pages](#9--step-7-publishing-the-site-to-cloudflare-pages)
+  - [Method A: Automatic Deploy with Git (Recommended)](#method-a-automatic-deploy-with-git-recommended)
+  - [Method B: Direct Upload](#method-b-direct-upload)
+- [10. Step 8: Connecting a Custom Domain (yourdomain.com)](#10--step-8-connecting-a-custom-domain-yourdomaincom)
+- [11. Step 9: Final Checks](#11--step-9-final-checks)
+- [12. Troubleshooting](#12--troubleshooting)
+- [13. Security Notes](#13--security-notes)
+- [14. Project Structure](#14--project-structure)
+- [15. How to Update](#15--how-to-update)
 
 ---
 
-## 2. 📋 Ön Gereksinimler
+## 1. 📌 About the Project
 
-Kuruluma başlamadan önce aşağıdakilerin hazır olduğundan emin olun:
+**VocabMaster** is a modern web application designed for learning English-Turkmen vocabulary. You can upload words from an Excel file, automatically categorize them with AI (Google Gemini), study with flashcards, test yourself, and track your learning progress through a dashboard.
 
-| # | Gereksinim | Açıklama |
-|---|-----------|----------|
-| 1 | 🔑 **Google Hesabı** | Gemini API anahtarı almak için gerekli. Gmail hesabınız varsa zaten var. |
-| 2 | ☁️ **Cloudflare Hesabı** | `poofs.app` domaini zaten Cloudflare üzerinde yönetiliyor. [dash.cloudflare.com](https://dash.cloudflare.com) adresinden giriş yapabilmelisiniz. |
-| 3 | 💻 **VS Code** | Kod editörü. [code.visualstudio.com](https://code.visualstudio.com/) adresinden indirin. |
-| 4 | 🌐 **Live Server Eklentisi** | VS Code içinde yerel test için. Kurulum yöntemi aşağıda anlatılacak. |
-| 5 | 🔧 **Git** | Versiyon kontrolü. [git-scm.com](https://git-scm.com/) adresinden indirin. Kurulumda tüm varsayılan ayarları kabul edin. |
-| 6 | 📦 **Node.js ve npm** | Wrangler CLI için gerekli. [nodejs.org](https://nodejs.org/) adresinden **LTS** sürümünü indirin. npm otomatik olarak birlikte gelir. |
-| 7 | 🌍 **Tarayıcı** | Google Chrome önerilir. DevTools ile hata ayıklama için en uygun seçenek. |
+### ✨ Features
 
-### Kurulumları Doğrulama
+| Feature | Description |
+|---------|-------------|
+| 📤 **Excel Upload** | Upload vocabulary files in `.xlsx` or `.xls` format. Smart column detection — automatically identifies which column is English, Transcription, and Turkmen. Automatically skips Russian, Japanese, and number columns. |
+| 🤖 **Gemini Categorization** | Automatically categorizes uploaded words using Google Gemini 2.5 Flash AI (Nouns, Verbs, Adjectives, Daily Life, Emotions, etc.) and generates 5 example sentences for each word. |
+| 📚 **Word Table** | View all words with advanced filtering (search, category, learned status, word length), sorting (A-Z, Z-A, shortest, longest, by category, etc.), and pagination features. |
+| 🃏 **Flashcards** | Learn words by flipping cards. Category-based filtering, keyboard shortcuts (← → Space), mark as learned. |
+| 📝 **Test Mode** | Two-way testing: English→Turkmen or Turkmen→English. Incorrectly answered words are automatically marked as "not learned". |
+| 🤖 **AI Feedback** | Test results are sent to Gemini AI and you receive personalized feedback, advice, and analysis in Turkmen language. |
+| 📊 **Dashboard** | Total word count, learned word ratio, test history, category-based progress bars, score graph, day streak, and words that need review. |
+| 🌙 **Theme Support** | Switch between Light and Dark themes. |
+| 💾 **Data Management** | Export/import data as JSON, clear all data. |
+| ⌨️ **Keyboard Shortcuts** | Alt+U (Upload), Alt+T (Test), Alt+D (Dashboard). |
 
-Terminali açın (VS Code içinde `` Ctrl+` `` tuşları ile) ve şu komutları çalıştırın:
+### 🛠️ Tech Stack
+
+| Technology | Purpose |
+|------------|---------|
+| **HTML5 / CSS3 / Vanilla JavaScript** | Frontend — no framework used, pure JavaScript |
+| **IndexedDB** | Client-side data storage (words, tests, settings) |
+| **Google Gemini 2.5 Flash API** | Word categorization and test feedback |
+| **SheetJS (xlsx)** | Reading and parsing Excel files (via CDN) |
+| **Cloudflare Pages** | Frontend hosting |
+| **Cloudflare Workers** | API proxy — hiding the Gemini API key |
+
+---
+
+## 2. 📋 Prerequisites
+
+Make sure the following are ready before starting the setup:
+
+| # | Requirement | Description |
+|---|-------------|-------------|
+| 1 | 🔑 **Google Account** | Required to get a Gemini API key. If you have a Gmail account, you already have one. |
+| 2 | ☁️ **Cloudflare Account** | The `yourdomain.com` domain is already managed on Cloudflare. You should be able to log in at [dash.cloudflare.com](https://dash.cloudflare.com). |
+| 3 | 💻 **VS Code** | Code editor. Download from [code.visualstudio.com](https://code.visualstudio.com/). |
+| 4 | 🌐 **Live Server Extension** | For local testing in VS Code. Installation instructions are explained below. |
+| 5 | 🔧 **Git** | Version control. Download from [git-scm.com](https://git-scm.com/). Accept all default settings during installation. |
+| 6 | 📦 **Node.js and npm** | Required for Wrangler CLI. Download the **LTS** version from [nodejs.org](https://nodejs.org/). npm comes bundled automatically. |
+| 7 | 🌍 **Browser** | Google Chrome is recommended. It's the best option for debugging with DevTools. |
+
+### Verifying Installations
+
+Open the terminal (in VS Code with `` Ctrl+` ``) and run the following commands:
 
 ```bash
 git --version
-# Beklenen çıktı: git version 2.x.x
+# Expected output: git version 2.x.x
 
 node --version
-# Beklenen çıktı: v18.x.x veya üzeri
+# Expected output: v18.x.x or higher
 
 npm --version
-# Beklenen çıktı: 9.x.x veya üzeri
+# Expected output: 9.x.x or higher
 ```
 
-> ⚠️ **Dikkat:** Eğer bu komutlardan herhangi biri "komut bulunamadı" hatası verirse, ilgili programı yükleyin ve terminali yeniden başlatın.
+> ⚠️ **Note:** If any of these commands returns a "command not found" error, install the relevant program and restart the terminal.
 
 ---
 
-## 3. 🔑 Adım 1: Gemini API Key Alma
+## 3. 🔑 Step 1: Getting a Gemini API Key
 
-Google Gemini API anahtarı, uygulamanın yapay zeka özelliklerini kullanabilmesi için gereklidir. Bu anahtar kelime kategorilendirme ve test geri bildirimi için kullanılır.
+The Google Gemini API key is required for the application to use AI features. This key is used for word categorization and test feedback.
 
-### Adım Adım:
+### Step by Step:
 
-1. Tarayıcınızda şu adresi açın: **https://aistudio.google.com/apikey**
+1. Open the following address in your browser: **https://aistudio.google.com/apikey**
 
-2. Google hesabınız ile giriş yapın.
-   - [Google giriş ekranı açılacak — e-posta ve şifrenizi girin]
+2. Sign in with your Google account.
+   - [The Google sign-in screen will appear — enter your email and password]
 
-3. API Keys sayfası açılacak. **"Create API Key"** butonuna tıklayın.
-   - [Sayfanın üst kısmında mavi renkli "Create API Key" butonu göreceksiniz]
+3. The API Keys page will open. Click the **"Create API Key"** button.
+   - [You will see a blue "Create API Key" button at the top of the page]
 
-4. Açılan pencerede iki seçenek göreceksiniz:
-   - **"Create API key in new project"** — Yeni bir Google Cloud projesi oluşturur (önerilen)
-   - **Mevcut bir proje seçme** — Zaten bir projeniz varsa onu seçebilirsiniz
-   - **"Create API key in new project"** seçeneğine tıklayın.
+4. In the popup window, you will see two options:
+   - **"Create API key in new project"** — Creates a new Google Cloud project (recommended)
+   - **Select an existing project** — You can select an existing project if you have one
+   - Click **"Create API key in new project"**.
 
-5. Birkaç saniye bekleyin. API anahtarınız oluşturulacak ve ekranda gösterilecek.
-   - Anahtar `AIza` ile başlayan uzun bir karakter dizisidir.
-   - Örnek: `AIzaSyD_XXXXXXXXXXXXXXXXXXXXXXXXXXXX`
+5. Wait a few seconds. Your API key will be generated and displayed on the screen.
+   - The key is a long string of characters starting with `AIza`.
+   - Example: `AIzaSyD_XXXXXXXXXXXXXXXXXXXXXXXXXXXX`
 
-6. **"Copy"** ikonuna tıklayarak anahtarı kopyalayın.
+6. Click the **"Copy"** icon to copy the key.
 
-7. Kopyaladığınız anahtarı geçici olarak güvenli bir yere kaydedin (Notepad veya Not Defteri).
+7. Temporarily save the copied key in a safe place (Notepad or Notes app).
 
-> 🔴 **KRİTİK GÜVENLİK UYARISI**
+> 🔴 **CRITICAL SECURITY WARNING**
 >
-> - Bu API anahtarını **ASLA** frontend JavaScript koduna yazmayın.
-> - Bu API anahtarını **ASLA** Git'e commit etmeyin.
-> - Bu API anahtarını **ASLA** kimseyle paylaşmayın.
-> - Bu API anahtarını **ASLA** herkese açık bir yerde (forum, sosyal medya vb.) paylaşmayın.
-> - Anahtar yalnızca Cloudflare Worker'ın gizli değişkenlerine (Secrets) eklenecektir.
-> - Eğer anahtarınız sızdırılırsa, başkaları sizin hesabınız üzerinden API çağrıları yapabilir ve size maliyet çıkarabilir.
+> - **NEVER** write this API key in frontend JavaScript code.
+> - **NEVER** commit this API key to Git.
+> - **NEVER** share this API key with anyone.
+> - **NEVER** share this API key in a public place (forums, social media, etc.).
+> - The key will only be added to the Cloudflare Worker's secret variables (Secrets).
+> - If your key is leaked, others can make API calls through your account and incur costs for you.
 
-> 💡 **İpucu:** API anahtarını kaybederseniz, aynı sayfadan yeni bir tane oluşturabilirsiniz. Eski anahtarı silmeyi (revoke) unutmayın.
-
----
-
-## 4. 🔧 Adım 2: Cloudflare Worker Oluşturma (API Proxy)
-
-Cloudflare Worker, frontend ile Gemini API arasında güvenli bir köprü (proxy) görevi görür. Bu sayede API anahtarınız hiçbir zaman kullanıcının tarayıcısında görünmez.
-
-**İki yöntemden birini seçin:**
+> 💡 **Tip:** If you lose your API key, you can create a new one from the same page. Don't forget to revoke (delete) the old key.
 
 ---
 
-### Yöntem A: Cloudflare Dashboard Üzerinden (Kolay Yol)
+## 4. 🔧 Step 2: Creating a Cloudflare Worker (API Proxy)
 
-Bu yöntem terminal kullanmadan, tamamıyla tarayıcı üzerinden yapılır. Başlangıç için önerilir.
+The Cloudflare Worker acts as a secure bridge (proxy) between the frontend and the Gemini API. This ensures your API key is never visible in the user's browser.
 
-#### Adım Adım:
+**Choose one of two methods:**
 
-**1.** Tarayıcınızda **https://dash.cloudflare.com** adresini açın ve giriş yapın.
+---
 
-**2.** Sol menüden **"Workers & Pages"** seçeneğine tıklayın.
-   - [Sol kenar çubuğunda bir işçi ikonu ile birlikte "Workers & Pages" yazısını göreceksiniz]
+### Method A: Via Cloudflare Dashboard (Easy Way)
 
-**3.** Sağ üstteki **"Create"** butonuna tıklayın.
-   - [Mavi renkli "Create" butonu sayfanın sağ üst köşesinde bulunur]
+This method is done entirely through the browser without using a terminal. Recommended for beginners.
 
-**4.** **"Create Worker"** seçeneğine tıklayın.
-   - ["Workers" sekmesinde "Create Worker" yazılı bir kart göreceksiniz]
+#### Step by Step:
 
-**5.** **Name** alanına `gemini-proxy` yazın.
-   - [Worker'ınıza bir isim vermeniz isteniyor — `gemini-proxy` yazın]
+**1.** Open **https://dash.cloudflare.com** in your browser and log in.
 
-**6.** **"Deploy"** butonuna tıklayın.
-   - Bu, varsayılan "Hello World" kodu ile worker'ı oluşturur. Endişelenmeyin, kodu hemen değiştireceğiz.
+**2.** Click **"Workers & Pages"** in the left menu.
+   - [You will see a worker icon with "Workers & Pages" text in the left sidebar]
 
-**7.** Deployment başarılı olduktan sonra **"Edit Code"** butonuna tıklayın.
-   - [Yeşil renkli başarı mesajının yanında "Edit Code" butonu göreceksiniz]
+**3.** Click the **"Create"** button in the top right.
+   - [The blue "Create" button is located in the top right corner of the page]
 
-**8.** Açılan kod editöründe **mevcut tüm kodu silin** (Ctrl+A ile tümünü seç, Delete ile sil).
+**4.** Click **"Create Worker"**.
+   - [You will see a card labeled "Create Worker" in the "Workers" tab]
 
-**9.** Aşağıdaki kodu **tamamen** kopyalayıp yapıştırın:
+**5.** Type `gemini-proxy` in the **Name** field.
+   - [You are asked to name your Worker — type `gemini-proxy`]
+
+**6.** Click the **"Deploy"** button.
+   - This creates the worker with default "Hello World" code. Don't worry, we'll change the code right away.
+
+**7.** After deployment succeeds, click the **"Edit Code"** button.
+   - [You will see an "Edit Code" button next to the green success message]
+
+**8.** In the code editor that opens, **delete all existing code** (select all with Ctrl+A, delete with Delete key).
+
+**9.** **Copy and paste** the following code **entirely**:
 
 ```javascript
 export default {
   async fetch(request, env) {
     const allowedOrigins = [
-      'https://poofs.app',
-      'https://www.poofs.app',
+      'https://yourdomain.com',
+      'https://www.yourdomain.com',
       'http://localhost:5500',
       'http://127.0.0.1:5500',
       'http://localhost:3000',
@@ -249,52 +249,52 @@ export default {
 };
 ```
 
-**10.** Sağ üstteki **"Save and Deploy"** butonuna tıklayın.
-   - [Mavi renkli "Save and Deploy" butonu editörün sağ üst köşesindedir]
+**10.** Click the **"Save and Deploy"** button in the top right.
+   - [The blue "Save and Deploy" button is in the top right corner of the editor]
 
-**11.** Deployment başarılı mesajını bekleyin.
+**11.** Wait for the deployment success message.
 
-**12.** Worker URL'inizi not edin. Şuna benzer olacak:
+**12.** Note your Worker URL. It will look like this:
    ```
-   https://gemini-proxy.KULLANICIADI.workers.dev
+   https://gemini-proxy.USERNAME.workers.dev
    ```
-   - Buradaki `KULLANICIADI` sizin Cloudflare kullanıcı adınızdır.
+   - `USERNAME` here is your Cloudflare username.
 
-> ✅ **Test:** Tarayıcıda `https://gemini-proxy.KULLANICIADI.workers.dev` adresini açın. `{"error":"Method not allowed"}` mesajını görmelisiniz. Bu **doğrudur** — çünkü tarayıcı GET isteği gönderir, Worker ise yalnızca POST kabul eder.
+> ✅ **Test:** Open `https://gemini-proxy.USERNAME.workers.dev` in your browser. You should see the message `{"error":"Method not allowed"}`. This is **correct** — because the browser sends a GET request, but the Worker only accepts POST.
 
 ---
 
-### Yöntem B: Wrangler CLI ile (Gelişmiş Yol)
+### Method B: Using Wrangler CLI (Advanced Way)
 
-Bu yöntem terminal kullanarak Worker'ı oluşturur. Daha hızlıdır ancak komut satırı bilgisi gerektirir.
+This method creates the Worker using the terminal. It's faster but requires command line knowledge.
 
-#### Adım Adım:
+#### Step by Step:
 
-**1.** VS Code'da terminali açın ( `` Ctrl+` `` tuşları ile).
+**1.** Open the terminal in VS Code (with `` Ctrl+` ``).
 
-**2.** Wrangler CLI'ı global olarak yükleyin:
+**2.** Install Wrangler CLI globally:
 
 ```bash
 npm install -g wrangler
 ```
 
-**3.** Cloudflare hesabınızla giriş yapın:
+**3.** Log in with your Cloudflare account:
 
 ```bash
 wrangler login
 ```
 
-   - Tarayıcı otomatik açılacak.
-   - [Cloudflare yetkilendirme sayfası açılacak — "Allow" butonuna tıklayın]
-   - Terminal'de "Successfully logged in" mesajını görmelisiniz.
+   - The browser will open automatically.
+   - [The Cloudflare authorization page will open — click the "Allow" button]
+   - You should see the message "Successfully logged in" in the terminal.
 
-**4.** Proje klasöründe `worker/` adında bir klasör oluşturun (eğer yoksa):
+**4.** Create a folder named `worker/` in the project directory (if it doesn't exist):
 
 ```bash
 mkdir worker
 ```
 
-**5.** `worker/wrangler.toml` dosyasını oluşturun ve şu içeriği yazın:
+**5.** Create the `worker/wrangler.toml` file with the following content:
 
 ```toml
 name = "gemini-proxy"
@@ -302,701 +302,701 @@ main = "index.js"
 compatibility_date = "2024-01-01"
 ```
 
-**6.** `worker/index.js` dosyasını oluşturun ve [Yöntem A, Adım 9](#yöntem-a-cloudflare-dashboard-üzerinden-kolay-yol)'daki kodun **aynısını** yapıştırın.
+**6.** Create the `worker/index.js` file and paste the **same code** from [Method A, Step 9](#method-a-via-cloudflare-dashboard-easy-way).
 
-**7.** Terminal'de `worker` klasörüne gidin:
+**7.** Navigate to the `worker` folder in the terminal:
 
 ```bash
 cd worker
 ```
 
-**8.** Worker'ı deploy edin:
+**8.** Deploy the Worker:
 
 ```bash
 wrangler deploy
 ```
 
-   - Başarılı mesaj ve Worker URL'ini göreceksiniz.
+   - You will see a success message and the Worker URL.
 
-**9.** API anahtarını gizli değişken olarak ekleyin:
+**9.** Add the API key as a secret variable:
 
 ```bash
 wrangler secret put GEMINI_API_KEY
 ```
 
-   - Terminal "Enter a secret value:" diye soracak.
-   - [Adım 1](#3--adım-1-gemini-api-key-alma)'de kaydettiğiniz API anahtarını yapıştırın ve Enter'a basın.
-   - "Success! Uploaded secret GEMINI_API_KEY" mesajını görmelisiniz.
+   - The terminal will ask "Enter a secret value:".
+   - Paste the API key you saved in [Step 1](#3--step-1-getting-a-gemini-api-key) and press Enter.
+   - You should see the message "Success! Uploaded secret GEMINI_API_KEY".
 
-> 💡 **İpucu:** `wrangler secret put` komutu ile eklenen değerler şifrelenir (encrypted) ve bir daha okunamaz. Yalnızca Worker kodu `env.GEMINI_API_KEY` ile erişebilir.
-
----
-
-## 5. 🔐 Adım 3: API Key'i Worker'a Ekleme
-
-> ⚠️ **Not:** Eğer [Yöntem B](#yöntem-b-wrangler-cli-ile-gelişmiş-yol)'yi kullandıysanız ve `wrangler secret put` komutunu çalıştırdıysanız, bu adımı zaten tamamladınız. Bu bölüm **Yöntem A** kullananlar içindir.
-
-API anahtarını Worker'ın gizli değişkenlerine (Secrets) eklemek, anahtarın güvenli bir şekilde saklanmasını sağlar. Şifrelenen değerler Cloudflare Dashboard'da bile tekrar görüntülenemez.
-
-### Adım Adım:
-
-**1.** **https://dash.cloudflare.com** adresine gidin ve giriş yapın.
-
-**2.** Sol menüden **"Workers & Pages"** seçeneğine tıklayın.
-
-**3.** Worker listesinden **`gemini-proxy`** isimli worker'a tıklayın.
-   - [Worker listesinde "gemini-proxy" adını göreceksiniz — üzerine tıklayın]
-
-**4.** Üstteki sekme menüsünden **"Settings"** sekmesine tıklayın.
-   - [Sayfanın üstünde "Deployments", "Metrics", "Logs", "Settings" gibi sekmeler var — "Settings" seçin]
-
-**5.** Sol taraftaki menüden **"Variables and Secrets"** seçeneğine tıklayın.
-   - [Sol alt menüde "Variables and Secrets" yazısını göreceksiniz]
-
-**6.** **"Add"** butonuna tıklayın.
-   - [Sayfada "Add" butonu görünecek]
-
-**7.** Açılan satırda:
-   - **Type** açılır menüsünden **"Secret"** seçeneğini seçin (varsayılan "Text" olabilir — değiştirin).
-   - **Variable name** alanına: `GEMINI_API_KEY` yazın (büyük harflerle, tam olarak böyle).
-   - **Value** alanına: [Adım 1](#3--adım-1-gemini-api-key-alma)'de kopyaladığınız API anahtarını yapıştırın.
-
-**8.** **"Encrypt"** butonuna tıklayın.
-   - Bu, değeri şifreler. Şifreledikten sonra değeri bir daha göremezsiniz.
-
-**9.** Sayfanın altındaki **"Save and Deploy"** butonuna tıklayın.
-   - [Mavi renkli "Save and Deploy" butonu sayfanın en altında olacak]
-
-> 💡 **Önemli Bilgiler:**
-> - Şifrelenen (encrypted) secret'lar bir daha görüntülenemez — siz bile değeri göremezsiniz.
-> - Worker kodunuz bu değere `env.GEMINI_API_KEY` şeklinde erişir.
-> - Anahtarı değiştirmek isterseniz, aynı adımları tekrarlayarak yeni değeri girmeniz gerekir (eski değerin üzerine yazılır).
-> - Bu sayede API anahtarınız sunucu tarafında güvenle saklanır ve hiçbir zaman kullanıcının tarayıcısına ulaşmaz.
+> 💡 **Tip:** Values added with the `wrangler secret put` command are encrypted and can never be read again. Only the Worker code can access them via `env.GEMINI_API_KEY`.
 
 ---
 
-## 6. 🌐 Adım 4: Custom Domain Bağlama (en-api.poofs.app)
+## 5. 🔐 Step 3: Adding the API Key to the Worker
 
-Worker'ınıza `en-api.poofs.app` subdomain'i bağlayacağız. Bu sayede frontend kodunuz API çağrılarını `https://en-api.poofs.app` adresine yapacak.
+> ⚠️ **Note:** If you used [Method B](#method-b-using-wrangler-cli-advanced-way) and ran the `wrangler secret put` command, you have already completed this step. This section is for those who used **Method A**.
 
-### Adım Adım:
+Adding the API key to the Worker's secret variables (Secrets) ensures the key is stored securely. Encrypted values cannot be viewed again, even in the Cloudflare Dashboard.
 
-**1.** **https://dash.cloudflare.com** adresine gidin.
+### Step by Step:
 
-**2.** Sol menüden **"Workers & Pages"** seçeneğine tıklayın.
+**1.** Go to **https://dash.cloudflare.com** and log in.
 
-**3.** Worker listesinden **`gemini-proxy`** worker'ına tıklayın.
+**2.** Click **"Workers & Pages"** in the left menu.
 
-**4.** Üstteki sekme menüsünden **"Settings"** sekmesine tıklayın.
+**3.** Click on the **`gemini-proxy`** worker from the worker list.
+   - [You will see "gemini-proxy" in the worker list — click on it]
 
-**5.** Sol taraftaki menüden **"Domains & Routes"** seçeneğine tıklayın.
-   - [Sol menüde "Domains & Routes" yazısını göreceksiniz]
+**4.** Click the **"Settings"** tab in the top menu.
+   - [There are tabs like "Deployments", "Metrics", "Logs", "Settings" at the top of the page — select "Settings"]
 
-**6.** **"Add"** butonuna tıklayın.
+**5.** Click **"Variables and Secrets"** in the left menu.
+   - [You will see "Variables and Secrets" in the bottom left menu]
 
-**7.** Açılan menüden **"Custom Domain"** seçeneğini seçin.
+**6.** Click the **"Add"** button.
+   - [An "Add" button will appear on the page]
 
-**8.** Domain alanına şunu yazın:
+**7.** In the row that opens:
+   - Select **"Secret"** from the **Type** dropdown menu (the default may be "Text" — change it).
+   - In the **Variable name** field: type `GEMINI_API_KEY` (in uppercase, exactly like this).
+   - In the **Value** field: paste the API key you copied in [Step 1](#3--step-1-getting-a-gemini-api-key).
 
-```
-en-api.poofs.app
-```
+**8.** Click the **"Encrypt"** button.
+   - This encrypts the value. After encrypting, you won't be able to see the value again.
 
-**9.** **"Add Domain"** butonuna tıklayın.
-   - [Cloudflare, `poofs.app` domaininizin DNS ayarlarında otomatik olarak gerekli CNAME kaydını oluşturacak]
+**9.** Click the **"Save and Deploy"** button at the bottom of the page.
+   - [The blue "Save and Deploy" button will be at the very bottom of the page]
 
-**10.** Aktivasyon durumunu bekleyin — genellikle **1-2 dakika** sürer.
-   - Durum "Initializing" → "Active" olarak değişecek.
-
-**11.** Test edin: Tarayıcınızda şu adresi açın:
-
-```
-https://en-api.poofs.app
-```
-
-> ✅ **Beklenen Sonuç:** `{"error":"Method not allowed"}` mesajını görmelisiniz. Bu **tamamen normal ve doğrudur** — çünkü tarayıcı GET isteği gönderir, Worker ise sadece POST isteklerini kabul eder. Bu mesajı görüyorsanız Worker doğru çalışıyor demektir.
-
-> ⚠️ **Eğer bu mesajı görmüyorsanız:**
-> - DNS yayılımı henüz tamamlanmamış olabilir — 5 dakika bekleyip tekrar deneyin.
-> - Cloudflare Dashboard'da DNS ayarlarını kontrol edin: `poofs.app` → DNS → `en-api` CNAME kaydının var olduğundan emin olun.
+> 💡 **Important Notes:**
+> - Encrypted secrets can never be viewed again — even you won't be able to see the value.
+> - Your Worker code accesses this value via `env.GEMINI_API_KEY`.
+> - If you want to change the key, you need to repeat the same steps and enter the new value (it overwrites the old value).
+> - This way, your API key is stored securely on the server side and never reaches the user's browser.
 
 ---
 
-## 7. 📝 Adım 5: Proje Kodunda API URL'ini Güncelleme
+## 6. 🌐 Step 4: Connecting a Custom Domain (en-api.yourdomain.com)
 
-Şimdi proje kodunu, API isteklerini `en-api.poofs.app` adresine yönlendirecek şekilde güncelleyeceğiz.
+We will connect the `en-api.yourdomain.com` subdomain to your Worker. This way, your frontend code will make API calls to `https://en-api.yourdomain.com`.
 
-### Adım Adım:
+### Step by Step:
 
-**1.** VS Code'da `js/gemini-api.js` dosyasını açın.
+**1.** Go to **https://dash.cloudflare.com**.
 
-**2.** Dosyanın üst kısmında API yapılandırma bölümünü bulun. Şuna benzer satırlar olacak:
+**2.** Click **"Workers & Pages"** in the left menu.
+
+**3.** Click on the **`gemini-proxy`** worker from the worker list.
+
+**4.** Click the **"Settings"** tab in the top menu.
+
+**5.** Click **"Domains & Routes"** in the left menu.
+   - [You will see "Domains & Routes" in the left menu]
+
+**6.** Click the **"Add"** button.
+
+**7.** Select **"Custom Domain"** from the menu that opens.
+
+**8.** Type the following in the domain field:
+
+```
+en-api.yourdomain.com
+```
+
+**9.** Click the **"Add Domain"** button.
+   - [Cloudflare will automatically create the necessary CNAME record in the DNS settings of your `yourdomain.com` domain]
+
+**10.** Wait for the activation status — it usually takes **1-2 minutes**.
+   - The status will change from "Initializing" → "Active".
+
+**11.** Test it: Open the following address in your browser:
+
+```
+https://en-api.yourdomain.com
+```
+
+> ✅ **Expected Result:** You should see the message `{"error":"Method not allowed"}`. This is **completely normal and correct** — because the browser sends a GET request, but the Worker only accepts POST requests. If you see this message, the Worker is working correctly.
+
+> ⚠️ **If you don't see this message:**
+> - DNS propagation may not have completed yet — wait 5 minutes and try again.
+> - Check the DNS settings in the Cloudflare Dashboard: `yourdomain.com` → DNS → make sure the `en-api` CNAME record exists.
+
+---
+
+## 7. 📝 Step 5: Updating the API URL in the Project Code
+
+Now we will update the project code to direct API requests to `en-api.yourdomain.com`.
+
+### Step by Step:
+
+**1.** Open the `js/gemini-api.js` file in VS Code.
+
+**2.** Find the API configuration section at the top of the file. There will be lines like this:
 
 ```javascript
 const PROXY_URL = 'https://api.yourdomain.com/';
 ```
 
-**3.** Bu satırı şu şekilde değiştirin:
+**3.** Change this line to:
 
 ```javascript
-const PROXY_URL = 'https://en-api.poofs.app/';
+const PROXY_URL = 'https://en-api.yourdomain.com/';
 ```
 
-**4.** `DIRECT_KEY` değişkeninin **boş** olduğundan emin olun:
+**4.** Make sure the `DIRECT_KEY` variable is **empty**:
 
 ```javascript
 const DIRECT_KEY = ''; // Replace with your key for local dev
 ```
 
-> ⚠️ **Dikkat:** Yerel geliştirme sırasında doğrudan Gemini API kullanmak isterseniz `DIRECT_KEY` değişkenine geçici olarak anahtarınızı yazabilirsiniz. **AMA** commit etmeden önce mutlaka sildiğinizden emin olun!
+> ⚠️ **Warning:** If you want to use the Gemini API directly during local development, you can temporarily write your key in the `DIRECT_KEY` variable. **BUT** make sure you delete it before committing!
 
-**5.** Hiçbir JavaScript dosyasında API anahtarı kalmadığından emin olun:
-   - VS Code'da **Ctrl+Shift+F** tuşlarına basın (tüm dosyalarda arama).
-   - Arama kutusuna `AIza` yazın.
-   - **Hiçbir sonuç çıkmamalı.** Eğer bir sonuç çıkarsa, o satırdaki anahtarı **hemen silin**.
+**5.** Make sure no API key remains in any JavaScript file:
+   - Press **Ctrl+Shift+F** in VS Code (search all files).
+   - Type `AIza` in the search box.
+   - **No results should appear.** If a result appears, **immediately delete** the key on that line.
 
-**6.** Dosyayı kaydedin (**Ctrl+S**).
+**6.** Save the file (**Ctrl+S**).
 
-> 💡 **Auto-detect Mantığı:** Uygulama otomatik olarak ortamı algılar:
-> - `localhost` veya `127.0.0.1` üzerindeyseniz → `DIRECT_URL` (doğrudan Gemini API) kullanılır.
-> - Canlı sitede (`poofs.app`) ise → `PROXY_URL` (Cloudflare Worker) kullanılır.
+> 💡 **Auto-detect Logic:** The application automatically detects the environment:
+> - If you're on `localhost` or `127.0.0.1` → `DIRECT_URL` (direct Gemini API) is used.
+> - On the live site (`yourdomain.com`) → `PROXY_URL` (Cloudflare Worker) is used.
 >
-> Bu sayede yerel geliştirme ve canlı site arasında sorunsuz geçiş yaparsınız.
+> This allows seamless switching between local development and the live site.
 
 ---
 
-## 8. 🧪 Adım 6: Yerel Test (Localhost)
+## 8. 🧪 Step 6: Local Testing (Localhost)
 
-Siteyi canlıya almadan önce yerel bilgisayarınızda test etmeniz çok önemlidir.
+It's very important to test on your local computer before going live.
 
-### Live Server Eklentisini Kurma
+### Installing the Live Server Extension
 
-Eğer VS Code'da Live Server eklentisi yüklü değilse:
+If the Live Server extension is not installed in VS Code:
 
-**1.** VS Code'da sol kenar çubuğundaki **Eklentiler** ikonuna tıklayın (veya **Ctrl+Shift+X**).
+**1.** Click the **Extensions** icon in the VS Code left sidebar (or **Ctrl+Shift+X**).
 
-**2.** Arama kutusuna **"Live Server"** yazın.
+**2.** Type **"Live Server"** in the search box.
 
-**3.** **"Live Server"** eklentisini bulun (yazar: **Ritwick Dey**).
-   - [Arama sonuçlarında ilk sırada çıkacak — yeşil ikon ve "Ritwick Dey" yazan seçenek]
+**3.** Find the **"Live Server"** extension (author: **Ritwick Dey**).
+   - [It will appear first in the search results — green icon with "Ritwick Dey"]
 
-**4.** **"Install"** butonuna tıklayın.
+**4.** Click the **"Install"** button.
 
-**5.** Kurulum tamamlandıktan sonra VS Code'u yeniden başlatın (isteğe bağlı ama önerilir).
+**5.** Restart VS Code after installation is complete (optional but recommended).
 
-### Projeyi Çalıştırma
+### Running the Project
 
-**1.** VS Code'da proje klasörünü açın (**File → Open Folder** veya **Ctrl+K Ctrl+O**).
+**1.** Open the project folder in VS Code (**File → Open Folder** or **Ctrl+K Ctrl+O**).
 
-**2.** Sol panelde `index.html` dosyasına sağ tıklayın.
+**2.** Right-click on the `index.html` file in the left panel.
 
-**3.** Açılan menüden **"Open with Live Server"** seçeneğine tıklayın.
-   - [Sağ tık menüsünde "Open with Live Server" yazısını göreceksiniz]
+**3.** Select **"Open with Live Server"** from the context menu.
+   - [You will see "Open with Live Server" in the right-click menu]
 
-**4.** Tarayıcı otomatik olarak açılacak:
+**4.** The browser will open automatically:
    ```
    http://127.0.0.1:5500
    ```
-   veya
+   or
    ```
    http://localhost:5500
    ```
 
-### Tam İşlevsellik Testi
+### Full Functionality Testing
 
-Aşağıdaki adımları sırayla test edin:
+Test the following steps in order:
 
-#### ✅ 1. Excel Dosyası Yükleme
-- Sol menüden **"📤 Upload Words"** seçeneğine tıklayın.
-- En az 10 kelimelik bir Excel dosyası yükleyin.
-- Dosya formatı (en az 2 sütun gerekli):
+#### ✅ 1. Excel File Upload
+- Click **"📤 Upload Words"** from the left menu.
+- Upload an Excel file with at least 10 words.
+- File format (at least 2 columns required):
 
-| Sütun A | Sütun B | Sütun C |
-|---------|---------|---------|
+| Column A | Column B | Column C |
+|----------|----------|----------|
 | apple | [ˈæpəl] | alma |
 | book | [bʊk] | kitap |
 | ... | ... | ... |
 
-- Dosyayı sürükleyip bırakın veya "Browse Files" butonuna tıklayın.
+- Drag and drop the file or click the "Browse Files" button.
 
-#### ✅ 2. Gemini Kategorilendirme
-- Dosya yüklendikten sonra önizleme tablosu görünecek.
-- **"✨ Confirm & Categorize with AI"** butonuna tıklayın.
-- Yükleme çubuğu yanıp sönecek — Gemini API yanıt verene kadar bekleyin.
-- Başarılı olursa kelimeler otomatik olarak kategorilere ayrılacak ve tabloda görünecek.
+#### ✅ 2. Gemini Categorization
+- After the file is uploaded, a preview table will appear.
+- Click the **"✨ Confirm & Categorize with AI"** button.
+- The loading bar will blink — wait until the Gemini API responds.
+- If successful, words will be automatically categorized and displayed in the table.
 
-#### ✅ 3. Kelime Tablosu
-- Arama kutusunu test edin.
-- Kategori filtrelerini test edin.
-- Sıralama seçeneklerini test edin.
-- Bir kelimenin yanındaki ✅/❌ butonuna tıklayarak öğrenildi/öğrenilmedi durumunu değiştirin.
+#### ✅ 3. Word Table
+- Test the search box.
+- Test category filters.
+- Test sorting options.
+- Click the ✅/❌ button next to a word to change its learned/not learned status.
 
-#### ✅ 4. Flashcard'lar
-- Sol menüden **"🃏 Flashcards"** seçeneğine tıklayın.
-- Kartı tıklayarak çevirin.
-- ← → ok tuşları ile gezinin.
-- Space tuşu ile kartı çevirin.
+#### ✅ 4. Flashcards
+- Click **"🃏 Flashcards"** from the left menu.
+- Click a card to flip it.
+- Navigate with ← → arrow keys.
+- Flip a card with the Space key.
 
-#### ✅ 5. Test Modu
-- Önce en az birkaç kelimeyi "öğrenildi" olarak işaretleyin (Flashcard'lar veya Kelime Tablosu'nda).
-- Sol menüden **"📝 Tests"** seçeneğine tıklayın.
-- **"English → Turkmen"** veya **"Turkmen → English"** modunu seçin.
-- Tüm soruları cevaplayın.
-- Sonuçlar sayfasında skor, kelime detayları ve Gemini geri bildirimini kontrol edin.
+#### ✅ 5. Test Mode
+- First, mark at least a few words as "learned" (in Flashcards or the Word Table).
+- Click **"📝 Tests"** from the left menu.
+- Select **"English → Turkmen"** or **"Turkmen → English"** mode.
+- Answer all questions.
+- Check the score, word details, and Gemini feedback on the results page.
 
 #### ✅ 6. Dashboard
-- Sol menüden **"📊 Dashboard"** seçeneğine tıklayın.
-- İstatistiklerin doğru olduğunu kontrol edin.
-- Test geçmişinin göründüğünden emin olun.
+- Click **"📊 Dashboard"** from the left menu.
+- Check that the statistics are correct.
+- Make sure the test history is visible.
 
-#### ✅ 7. Tema
-- Sağ üstteki 🌙/☀️ butonuna tıklayarak temayı değiştirin.
+#### ✅ 7. Theme
+- Click the 🌙/☀️ button in the top right to change the theme.
 
-### Sorun Giderme (Yerel Test)
+### Troubleshooting (Local Testing)
 
-Eğer Gemini API çağrıları başarısız olursa:
+If Gemini API calls fail:
 
-**1.** Worker çalışıyor mu? Tarayıcıda `https://en-api.poofs.app` adresini açın.
-   - `{"error":"Method not allowed"}` görüyorsanız → Worker çalışıyor ✅
-   - Sayfa açılmıyorsa → Worker deploy edilmemiş veya domain bağlanmamış ❌
+**1.** Is the Worker running? Open `https://en-api.yourdomain.com` in the browser.
+   - If you see `{"error":"Method not allowed"}` → Worker is running ✅
+   - If the page doesn't open → Worker is not deployed or domain is not connected ❌
 
-**2.** API anahtarı eklendi mi? [Adım 3](#5--adım-3-api-keyi-workera-ekleme)'ü kontrol edin.
+**2.** Is the API key added? Check [Step 3](#5--step-3-adding-the-api-key-to-the-worker).
 
-**3.** `localhost:5500` izin verilen origin listesinde mi? Worker kodundaki `allowedOrigins` dizisinde şu satırlar olmalı:
+**3.** Is `localhost:5500` in the allowed origins list? The `allowedOrigins` array in the Worker code should have these lines:
    ```javascript
    'http://localhost:5500',
    'http://127.0.0.1:5500',
    ```
 
-**4.** Tarayıcı DevTools'u açın (**F12** tuşu):
-   - **Console** sekmesi: Kırmızı renkli hata mesajlarını kontrol edin.
-   - **Network** sekmesi: API isteğinin durumunu kontrol edin (Status Code, Response).
+**4.** Open the browser DevTools (**F12** key):
+   - **Console** tab: Check for red error messages.
+   - **Network** tab: Check the status of the API request (Status Code, Response).
 
-> 💡 **İpucu:** Network sekmesinde POST isteğini bulun ve "Response" kısmına bakın. Gemini'den dönen hata mesajı sorunu anlamanıza yardımcı olacaktır.
-
----
-
-## 9. 🚀 Adım 7: Siteyi Cloudflare Pages'a Yayınlama
-
-Yerel testler başarılı olduktan sonra, siteyi canlıya alabiliriz. İki yöntem var:
+> 💡 **Tip:** Find the POST request in the Network tab and look at the "Response" section. The error message from Gemini will help you understand the issue.
 
 ---
 
-### Yöntem A: Git ile Otomatik Deploy (Önerilen)
+## 9. 🚀 Step 7: Publishing the Site to Cloudflare Pages
 
-Bu yöntemde kodu GitHub'a push ettiğinizde Cloudflare otomatik olarak siteyi günceller. En pratik yöntemdir.
+After local tests are successful, we can go live. There are two methods:
 
-#### Adım Adım:
+---
 
-**1.** VS Code'da terminali açın ( `` Ctrl+` `` ).
+### Method A: Automatic Deploy with Git (Recommended)
 
-**2.** Proje klasörünüzde olduğunuzdan emin olun:
+In this method, Cloudflare automatically updates the site when you push code to GitHub. This is the most practical method.
+
+#### Step by Step:
+
+**1.** Open the terminal in VS Code (`` Ctrl+` ``).
+
+**2.** Make sure you are in the project folder:
 
 ```bash
 cd c:\Users\Alybeg\Desktop\english
 ```
 
-**3.** Git reposunu başlatın (eğer başlatılmadıysa):
+**3.** Initialize the Git repo (if not already initialized):
 
 ```bash
 git init
 ```
 
-**4.** Tüm dosyaları staging'e ekleyin:
+**4.** Add all files to staging:
 
 ```bash
 git add .
 ```
 
-> ⚠️ **Dikkat:** `git add .` komutunu çalıştırmadan önce projede API anahtarı kalmadığından emin olun! `js/gemini-api.js` dosyasında `DIRECT_KEY` boş olmalı.
+> ⚠️ **Warning:** Before running `git add .`, make sure no API key remains in the project! The `DIRECT_KEY` in `js/gemini-api.js` should be empty.
 
-**5.** İlk commit'i oluşturun:
+**5.** Create the first commit:
 
 ```bash
 git commit -m "VocabMaster initial release"
 ```
 
-**6.** Ana dalı `main` olarak ayarlayın:
+**6.** Set the main branch to `main`:
 
 ```bash
 git branch -M main
 ```
 
-**7.** GitHub remote'unu ekleyin:
+**7.** Add the GitHub remote:
 
 ```bash
-git remote add origin https://github.com/alibeg-begow/test.git
+git remote add origin https://github.com/alibeg-begow/VocabMaster.git
 ```
 
-> 💡 **Not:** Eğer remote zaten ekliyse, `fatal: remote origin already exists` hatası alırsınız. Bu durumda bu adımı atlayın.
+> 💡 **Note:** If the remote is already added, you'll get a `fatal: remote origin already exists` error. In that case, skip this step.
 
-**8.** Kodu GitHub'a push edin:
+**8.** Push the code to GitHub:
 
 ```bash
 git push -u origin main
 ```
 
-   - GitHub kullanıcı adınız ve şifreniz (veya personal access token) istenebilir.
-   - Push başarılı olduktan sonra kodunuz GitHub'da görünür olacak.
+   - Your GitHub username and password (or personal access token) may be requested.
+   - After a successful push, your code will be visible on GitHub.
 
-**9.** Cloudflare Dashboard'a gidin: **https://dash.cloudflare.com**
+**9.** Go to the Cloudflare Dashboard: **https://dash.cloudflare.com**
 
-**10.** Sol menüden **"Workers & Pages"** seçeneğine tıklayın.
+**10.** Click **"Workers & Pages"** in the left menu.
 
-**11.** **"Create"** butonuna tıklayın.
+**11.** Click the **"Create"** button.
 
-**12.** **"Pages"** sekmesine tıklayın.
-   - [Sayfanın üstünde "Workers" ve "Pages" sekmeleri var — "Pages" seçin]
+**12.** Click the **"Pages"** tab.
+   - [There are "Workers" and "Pages" tabs at the top of the page — select "Pages"]
 
-**13.** **"Connect to Git"** seçeneğine tıklayın.
+**13.** Click the **"Connect to Git"** option.
 
-**14.** GitHub hesabınızı yetkilendirin (eğer ilk kez yapıyorsanız):
-   - [GitHub'a yönlendirileceksiniz — "Authorize Cloudflare" butonuna tıklayın]
-   - Hangi repoları erişilebilir yapacağınızı seçin (tüm repolar veya sadece seçili olanlar).
+**14.** Authorize your GitHub account (if doing this for the first time):
+   - [You will be redirected to GitHub — click the "Authorize Cloudflare" button]
+   - Choose which repos to make accessible (all repos or only selected ones).
 
-**15.** Repository listesinden **`alibeg-begow/test`** reposunu seçin.
-   - [Repository listesinde "test" reposunu bulun ve seçin]
+**15.** Select the **`alibeg-begow/VocabMaster`** repo from the repository list.
+   - [Find and select the "VocabMaster" repo in the repository list]
 
-**16.** **"Begin setup"** butonuna tıklayın.
+**16.** Click the **"Begin setup"** button.
 
-**17.** Build ayarlarını yapılandırın:
-   - **Project name:** `vocabmaster` (veya istediğiniz bir isim)
+**17.** Configure the build settings:
+   - **Project name:** `vocabmaster` (or any name you prefer)
    - **Production branch:** `main`
-   - **Framework preset:** `None` (açılır menüden "None" seçin)
-   - **Build command:** Boş bırakın (temizleyin).
-   - **Build output directory:** `/` yazın (kök dizin).
+   - **Framework preset:** `None` (select "None" from the dropdown)
+   - **Build command:** Leave empty (clear it).
+   - **Build output directory:** Type `/` (root directory).
 
-**18.** **"Save and Deploy"** butonuna tıklayın.
+**18.** Click the **"Save and Deploy"** button.
 
-**19.** Deployment'ın tamamlanmasını bekleyin (genellikle 30-60 saniye).
-   - [İlerleme çubuğu ve log mesajları göreceksiniz]
+**19.** Wait for the deployment to complete (usually 30-60 seconds).
+   - [You will see a progress bar and log messages]
 
-**20.** Deployment başarılı olduktan sonra Cloudflare size bir URL verecek:
-   ```
+**20.** After deployment succeeds, Cloudflare will give you a URL:
+   ````
    https://vocabmaster-xxx.pages.dev
-   ```
-   - Bu URL'yi tarayıcıda açarak sitenizi test edebilirsiniz.
+   ````
+   - You can test your site by opening this URL in the browser.
 
-> ✅ **Otomatik Deploy:** Bundan sonra `main` dalına her push yaptığınızda Cloudflare otomatik olarak siteyi günceller. Manuel işlem gerekmez!
+> ✅ **Automatic Deploy:** From now on, every time you push to the `main` branch, Cloudflare will automatically update the site. No manual action required!
 
 ---
 
-### Yöntem B: Doğrudan Upload
+### Method B: Direct Upload
 
-Bu yöntem Git kullanmadan, dosyaları doğrudan Cloudflare'a yükler.
+This method uploads files directly to Cloudflare without using Git.
 
-#### Adım Adım:
+#### Step by Step:
 
-**1.** **https://dash.cloudflare.com** adresine gidin.
+**1.** Go to **https://dash.cloudflare.com**.
 
-**2.** Sol menüden **"Workers & Pages"** seçeneğine tıklayın.
+**2.** Click **"Workers & Pages"** in the left menu.
 
-**3.** **"Create"** butonuna tıklayın.
+**3.** Click the **"Create"** button.
 
-**4.** **"Pages"** sekmesine tıklayın.
+**4.** Click the **"Pages"** tab.
 
-**5.** **"Direct Upload"** seçeneğine tıklayın.
-   - ["Connect to Git" yerine "Direct Upload" yazılı bağlantıya tıklayın]
+**5.** Click the **"Direct Upload"** option.
+   - [Click the "Direct Upload" link instead of "Connect to Git"]
 
-**6.** **Project name** alanına `vocabmaster` yazın.
+**6.** Type `vocabmaster` in the **Project name** field.
 
-**7.** **"Create Project"** butonuna tıklayın.
+**7.** Click the **"Create Project"** button.
 
-**8.** Açılan upload sayfasında:
-   - Proje klasörünüzdeki **tüm dosyaları** (index.html, css/, js/ klasörleri) seçin.
-   - Sürükleyip bırakın veya "Select Files" ile seçin.
+**8.** On the upload page that opens:
+   - Select **all files** from your project folder (index.html, css/, js/ folders).
+   - Drag and drop or select with "Select Files".
 
-> ⚠️ **Dikkat:** `worker/` klasörünü **yüklemeyin** — o ayrı bir Worker olarak deploy edildi. Sadece frontend dosyalarını yükleyin: `index.html`, `css/`, `js/`.
+> ⚠️ **Warning:** Do **not** upload the `worker/` folder — it was deployed as a separate Worker. Only upload frontend files: `index.html`, `css/`, `js/`.
 
-**9.** **"Deploy Site"** butonuna tıklayın.
+**9.** Click the **"Deploy Site"** button.
 
-**10.** Deployment tamamlandığında URL'nizi göreceksiniz:
-   ```
+**10.** When deployment is complete, you will see your URL:
+   ````
    https://vocabmaster-xxx.pages.dev
-   ```
+   ````
 
-> 💡 **Not:** Doğrudan upload yönteminde güncelleme yapmak için her seferinde dosyaları tekrar yüklemeniz gerekir. Git yöntemi daha pratiktir.
+> 💡 **Note:** With the direct upload method, you need to re-upload files each time you make an update. The Git method is more practical.
 
 ---
 
-## 10. 🔗 Adım 8: Custom Domain Bağlama (poofs.app)
+## 10. 🔗 Step 8: Connecting a Custom Domain (yourdomain.com)
 
-Cloudflare Pages projenize `poofs.app` domainini bağlayacağız.
+We will connect the `yourdomain.com` domain to your Cloudflare Pages project.
 
-### Adım Adım:
+### Step by Step:
 
-**1.** Cloudflare Dashboard'da **"Workers & Pages"** sayfasına gidin.
+**1.** Go to the **"Workers & Pages"** page in the Cloudflare Dashboard.
 
-**2.** Pages projelerinizden **`vocabmaster`** projesine tıklayın.
+**2.** Click on the **`vocabmaster`** project from your Pages projects.
 
-**3.** Üstteki sekme menüsünden **"Custom domains"** sekmesine tıklayın.
-   - ["Deployments", "Custom domains", "Settings" sekmeleri var — "Custom domains" seçin]
+**3.** Click the **"Custom domains"** tab in the top menu.
+   - [There are "Deployments", "Custom domains", "Settings" tabs — select "Custom domains"]
 
-**4.** **"Set up a custom domain"** butonuna tıklayın.
+**4.** Click the **"Set up a custom domain"** button.
 
-**5.** Domain alanına şunu yazın:
+**5.** Type the following in the domain field:
 
 ```
-poofs.app
+yourdomain.com
 ```
 
-**6.** **"Continue"** butonuna tıklayın.
-   - [Cloudflare, DNS ayarlarını otomatik olarak yapılandıracak]
+**6.** Click the **"Continue"** button.
+   - [Cloudflare will automatically configure the DNS settings]
 
-**7.** **"Activate domain"** butonuna tıklayın.
+**7.** Click the **"Activate domain"** button.
 
-**8.** Aynı işlemi `www.poofs.app` için de tekrarlayın:
-   - **"Set up a custom domain"** butonuna tekrar tıklayın.
-   - `www.poofs.app` yazın.
-   - **"Continue"** → **"Activate domain"** butonlarına tıklayın.
+**8.** Repeat the same process for `www.yourdomain.com`:
+   - Click the **"Set up a custom domain"** button again.
+   - Type `www.yourdomain.com`.
+   - Click **"Continue"** → **"Activate domain"** buttons.
 
-**9.** SSL sertifikasının aktif olmasını bekleyin (genellikle **1-5 dakika**).
-   - Durum "Initializing" → "Active" olarak değişecek.
+**9.** Wait for the SSL certificate to become active (usually **1-5 minutes**).
+   - The status will change from "Initializing" → "Active".
 
-**10.** www → root yönlendirmesi ayarlayın (isteğe bağlı ama önerilir):
-   - Cloudflare Dashboard'da `poofs.app` domaininize gidin.
-   - **Rules** → **"Redirect Rules"** → **"Create Rule"** tıklayın.
+**10.** Set up www → root redirect (optional but recommended):
+   - Go to your `yourdomain.com` domain in the Cloudflare Dashboard.
+   - Click **Rules** → **"Redirect Rules"** → **"Create Rule"**.
    - Rule name: `www to root`
-   - When: Hostname equals `www.poofs.app`
-   - Then: Dynamic redirect → `https://poofs.app${http.request.uri.path}` (Status: 301)
-   - **"Deploy"** tıklayın.
+   - When: Hostname equals `www.yourdomain.com`
+   - Then: Dynamic redirect → `https://yourdomain.com${http.request.uri.path}` (Status: 301)
+   - Click **"Deploy"**.
 
-**11.** Sitenizi test edin:
+**11.** Test your site:
 
 ```
-https://poofs.app
+https://yourdomain.com
 ```
 
-> ✅ **Beklenen Sonuç:** VocabMaster uygulaması açılmalı ve tam olarak çalışmalı!
+> ✅ **Expected Result:** The VocabMaster application should open and work fully!
 
 ---
 
-## 11. ✅ Adım 9: Son Kontroller
+## 11. ✅ Step 9: Final Checks
 
-Aşağıdaki kontrol listesini tek tek kontrol edin ve her maddenin yanındaki kutuyu işaretleyin:
+Check the following checklist one by one and mark each item:
 
-### İşlevsellik Kontrolleri
+### Functionality Checks
 
-- [ ] `https://poofs.app` açılıyor mu?
-- [ ] Sayfa düzgün yükleniyor mu (yükleme çarkı dönmüyor mu)?
-- [ ] Excel dosyası yüklenebiliyor mu?
-- [ ] Gemini kategorilendirme çalışıyor mu (kelimeler kategorilere ayrılıyor mu)?
-- [ ] Kelime tablosu ve filtreler çalışıyor mu?
-- [ ] Flashcard'lar düzgün gösteriliyor mu (çevirme animasyonu vb.)?
-- [ ] Test modu çalışıyor mu (sorular geliyor, cevap verilebiliyor mu)?
-- [ ] Test sonuçlarında Gemini geri bildirimi geliyor mu?
-- [ ] Dashboard istatistikleri doğru mu?
-- [ ] Dark/Light tema çalışıyor mu?
-- [ ] Sayfa yenilendiğinde (F5) veriler korunuyor mu?
-- [ ] Veri dışa aktarma (Export) çalışıyor mu?
-- [ ] Veri içe aktarma (Import) çalışıyor mu?
+- [ ] Does `https://yourdomain.com` open?
+- [ ] Does the page load properly (no spinning loader)?
+- [ ] Can an Excel file be uploaded?
+- [ ] Does Gemini categorization work (are words categorized)?
+- [ ] Do the word table and filters work?
+- [ ] Are flashcards displayed properly (flip animation, etc.)?
+- [ ] Does test mode work (do questions appear, can they be answered)?
+- [ ] Does Gemini feedback appear in test results?
+- [ ] Are dashboard statistics correct?
+- [ ] Does Dark/Light theme work?
+- [ ] Is data preserved after refreshing the page (F5)?
+- [ ] Does data export work?
+- [ ] Does data import work?
 
-### Güvenlik Kontrolleri
+### Security Checks
 
-- [ ] `js/gemini-api.js` dosyasında API key **YOK** mu?
-- [ ] Tarayıcı DevTools → **Sources** sekmesinde API key görünmüyor mu?
-- [ ] VS Code'da tüm dosyalarda `AIza` araması sonuçsuz mu? (**Ctrl+Shift+F** → `AIza` yaz)
-- [ ] `https://en-api.poofs.app` adresine GET isteği "Method not allowed" döndürüyor mu?
+- [ ] Is there **NO** API key in the `js/gemini-api.js` file?
+- [ ] Does the API key NOT appear in Browser DevTools → **Sources** tab?
+- [ ] Does searching for `AIza` across all files in VS Code return no results? (**Ctrl+Shift+F** → type `AIza`)
+- [ ] Does a GET request to `https://en-api.yourdomain.com` return "Method not allowed"?
 
-### Performans Kontrolleri
+### Performance Checks
 
-- [ ] Sayfa 3 saniyeden kısa sürede açılıyor mu?
-- [ ] Mobil cihazda düzgün görünüyor mu?
-- [ ] Farklı tarayıcılarda (Chrome, Firefox, Edge) çalışıyor mu?
-
----
-
-## 12. 🔧 Sorun Giderme
-
-Karşılaşabileceğiniz yaygın sorunlar ve çözümleri:
-
-| Sorun | Olası Neden | Çözüm |
-|-------|------------|-------|
-| `API error: 403 Forbidden` | Worker origin kontrolü, domain izin listesinde yok | Worker kodundaki `allowedOrigins` dizisine domaininizi ekleyin ve tekrar deploy edin |
-| `API error: 401 Unauthorized` | API key hatalı veya eksik | Cloudflare Dashboard → Worker → Settings → Variables and Secrets'ta `GEMINI_API_KEY` değerini kontrol edin. Gerekirse yeniden ekleyin |
-| `API error: 429 Too Many Requests` | Gemini API rate limit aşıldı | Birkaç dakika bekleyin ve tekrar deneyin. Ücretsiz planda dakikada belirli sayıda istek sınırı var |
-| `Failed to fetch` | Worker URL yanlış veya Worker çalışmıyor | `js/gemini-api.js` dosyasındaki `PROXY_URL` değerini kontrol edin. `https://en-api.poofs.app/` olmalı |
-| `Network Error` | İnternet bağlantısı yok veya Worker erişilemez | İnternet bağlantınızı kontrol edin. `https://en-api.poofs.app` adresini tarayıcıda açmayı deneyin |
-| Kelimeler kayboluyor | Tarayıcı verileri temizlendi (IndexedDB silindi) | Tarayıcı ayarlarından site verilerini silmeyin. "Tüm geçmişi temizle" yaparken dikkatli olun |
-| Excel yüklenmiyor | Dosya formatı hatalı veya boyut çok büyük | `.xlsx` veya `.xls` formatı kullanın. Maksimum dosya boyutu 5 MB. En az 2 sütun (İngilizce ve Türkmence) olmalı |
-| Gemini boş cevap döndürüyor | Token limiti aşıldı veya kelime sayısı çok fazla | Kelime sayısını azaltın (maksimum 200). Daha kısa kelimeler deneyin |
-| Site açılmıyor (DNS hatası) | DNS yayılımı tamamlanmamış | 5-10 dakika bekleyin. Cloudflare Dashboard'da DNS kayıtlarını kontrol edin |
-| CSS bozuk görünüyor | Tarayıcı cache sorunu | **Ctrl+Shift+R** ile hard refresh yapın. Veya DevTools → Network → "Disable cache" kutusunu işaretleyin |
-| Worker editörü açılmıyor | Tarayıcı engeli veya eklenti sorunu | Farklı bir tarayıcı deneyin. Reklam engelleyici eklentileri geçici olarak devre dışı bırakın |
-| `git push` başarısız | GitHub kimlik doğrulama hatası | Personal Access Token (PAT) oluşturun: GitHub → Settings → Developer Settings → Personal Access Tokens → Generate New Token |
-| Flashcard çevirme çalışmıyor | JavaScript hatası | DevTools Console'da hata mesajını kontrol edin. Sayfayı yenileyin (F5) |
-| Test sonucunda AI geri bildirimi gelmiyor | Worker timeout veya API hatası | Console'da hata mesajını kontrol edin. Worker'ın çalıştığından emin olun |
-
-### DevTools ile Hata Ayıklama
-
-Herhangi bir sorunla karşılaştığınızda:
-
-**1.** Tarayıcıda **F12** tuşuna basarak DevTools'u açın.
-
-**2.** **Console** sekmesi: Kırmızı renkli hata mesajlarını okuyun. Hatanın hangi dosyadan kaynaklandığını gösterir.
-
-**3.** **Network** sekmesi: API isteklerini filtreleyin:
-   - Filtre kutusuna `en-api` yazın.
-   - POST isteklerinin durumunu (Status) kontrol edin:
-     - **200** = Başarılı ✅
-     - **403** = Origin engellendi (Worker'a domain eklenmemiş) ❌
-     - **401** = API key hatalı ❌
-     - **429** = Rate limit aşıldı ⚠️
-     - **500** = Sunucu hatası ❌
-   - İsteğe tıklayıp **Response** sekmesinde dönen cevabı inceleyin.
+- [ ] Does the page open in less than 3 seconds?
+- [ ] Does it display properly on mobile devices?
+- [ ] Does it work in different browsers (Chrome, Firefox, Edge)?
 
 ---
 
-## 13. 🛡️ Güvenlik Notları
+## 12. 🔧 Troubleshooting
 
-### API Anahtarı Güvenliği
+Common problems you may encounter and their solutions:
 
-| ❌ YAPMAYIN | ✅ YAPIN |
-|------------|---------|
-| API key'i JavaScript dosyasına yazmayın | API key'i Cloudflare Worker Secrets'a ekleyin |
-| API key'i Git'e commit etmeyin | `.gitignore` dosyasına hassas dosyaları ekleyin |
-| API key'i herkese açık bir yerde paylaşmayın | Key'i Notepad'de geçici olarak saklayın, sonra silin |
-| API key'i URL parametresi olarak göndermeyin | Worker proxy üzerinden göndermeyi kullanın |
+| Problem | Possible Cause | Solution |
+|---------|---------------|----------|
+| `API error: 403 Forbidden` | Worker origin check, domain not in allowed list | Add your domain to the `allowedOrigins` array in the Worker code and redeploy |
+| `API error: 401 Unauthorized` | API key is incorrect or missing | Check the `GEMINI_API_KEY` value in Cloudflare Dashboard → Worker → Settings → Variables and Secrets. Re-add if necessary |
+| `API error: 429 Too Many Requests` | Gemini API rate limit exceeded | Wait a few minutes and try again. The free plan has a limited number of requests per minute |
+| `Failed to fetch` | Worker URL is wrong or Worker is not running | Check the `PROXY_URL` value in `js/gemini-api.js`. It should be `https://en-api.yourdomain.com/` |
+| `Network Error` | No internet connection or Worker is unreachable | Check your internet connection. Try opening `https://en-api.yourdomain.com` in the browser |
+| Words disappearing | Browser data cleared (IndexedDB deleted) | Don't delete site data from browser settings. Be careful when clearing "all history" |
+| Excel not uploading | File format is wrong or file is too large | Use `.xlsx` or `.xls` format. Maximum file size is 5 MB. At least 2 columns (English and Turkmen) are required |
+| Gemini returning empty response | Token limit exceeded or too many words | Reduce the word count (maximum 200). Try shorter words |
+| Site not opening (DNS error) | DNS propagation not completed | Wait 5-10 minutes. Check DNS records in the Cloudflare Dashboard |
+| CSS looks broken | Browser cache issue | Do a hard refresh with **Ctrl+Shift+R**. Or check "Disable cache" in DevTools → Network |
+| Worker editor not opening | Browser block or extension issue | Try a different browser. Temporarily disable ad blocker extensions |
+| `git push` failed | GitHub authentication error | Create a Personal Access Token (PAT): GitHub → Settings → Developer Settings → Personal Access Tokens → Generate New Token |
+| Flashcard flip not working | JavaScript error | Check the error message in DevTools Console. Refresh the page (F5) |
+| AI feedback not appearing in test results | Worker timeout or API error | Check the error message in Console. Make sure the Worker is running |
 
-### Worker Güvenliği
+### Debugging with DevTools
 
-- Worker **yalnızca** `allowedOrigins` listesindeki sitelerden gelen istekleri kabul eder.
-- Listedeki siteler:
-  - `https://poofs.app` — canlı site
-  - `https://www.poofs.app` — www versiyonu
-  - `http://localhost:5500` — yerel geliştirme (Live Server)
-  - `http://127.0.0.1:5500` — yerel geliştirme (alternatif)
-  - `http://localhost:3000` — yerel geliştirme (alternatif port)
-  - `http://127.0.0.1:3000` — yerel geliştirme (alternatif port)
-- Başka siteler Worker'ınızı **kullanamaz** — CORS koruması aktiftir.
-- Worker yalnızca **POST** isteklerini kabul eder — GET, PUT, DELETE engellenir.
-- İstek boyutu **1 MB** ile sınırlıdır — büyük boyutlu kötü niyetli istekler engellenir.
+When you encounter any issue:
 
-### API Anahtarını Değiştirme
+**1.** Press **F12** in the browser to open DevTools.
 
-Eğer API anahtarınızı değiştirmeniz gerekirse:
+**2.** **Console** tab: Read the red error messages. It shows which file the error originates from.
 
-1. **Google AI Studio** → [aistudio.google.com/apikey](https://aistudio.google.com/apikey) → Eski anahtarı silin (Delete/Revoke).
-2. Yeni bir anahtar oluşturun.
+**3.** **Network** tab: Filter API requests:
+   - Type `en-api` in the filter box.
+   - Check the status of POST requests:
+     - **200** = Success ✅
+     - **403** = Origin blocked (domain not added to Worker) ❌
+     - **401** = API key is wrong ❌
+     - **429** = Rate limit exceeded ⚠️
+     - **500** = Server error ❌
+   - Click on a request and examine the response in the **Response** tab.
+
+---
+
+## 13. 🛡️ Security Notes
+
+### API Key Security
+
+| ❌ DON'T DO | ✅ DO |
+|------------|------|
+| Don't write the API key in JavaScript files | Add the API key to Cloudflare Worker Secrets |
+| Don't commit the API key to Git | Add sensitive files to `.gitignore` |
+| Don't share the API key in a public place | Temporarily store the key in Notepad, then delete it |
+| Don't send the API key as a URL parameter | Use the Worker proxy to send it |
+
+### Worker Security
+
+- The Worker **only** accepts requests from sites in the `allowedOrigins` list.
+- Sites in the list:
+  - `https://yourdomain.com` — live site
+  - `https://www.yourdomain.com` — www version
+  - `http://localhost:5500` — local development (Live Server)
+  - `http://127.0.0.1:5500` — local development (alternative)
+  - `http://localhost:3000` — local development (alternative port)
+  - `http://127.0.0.1:3000` — local development (alternative port)
+- Other sites **cannot** use your Worker — CORS protection is active.
+- The Worker only accepts **POST** requests — GET, PUT, DELETE are blocked.
+- Request size is limited to **1 MB** — large malicious requests are blocked.
+
+### Changing the API Key
+
+If you need to change your API key:
+
+1. **Google AI Studio** → [aistudio.google.com/apikey](https://aistudio.google.com/apikey) → Delete (Revoke) the old key.
+2. Create a new key.
 3. **Cloudflare Dashboard** → Workers & Pages → `gemini-proxy` → Settings → Variables and Secrets.
-4. `GEMINI_API_KEY` değerini güncelleyin → "Encrypt" → "Save and Deploy".
+4. Update the `GEMINI_API_KEY` value → "Encrypt" → "Save and Deploy".
 
-### Git Güvenliği
+### Git Security
 
-Eğer API anahtarı yanlışlıkla Git geçmişine commit edildiyse:
+If the API key was accidentally committed to Git history:
 
-> ⚠️ **Uyarı:** `git push --force` mevcut geçmişi değiştirir. Dikkatli kullanın.
+> ⚠️ **Warning:** `git push --force` changes the existing history. Use with caution.
 
 ```bash
-# Git geçmişinden hassas dosyayı tamamen kaldırma
+# Completely remove the sensitive file from Git history
 git filter-branch --force --tree-filter "sed -i 's/AIza[A-Za-z0-9_-]*/REMOVED/g' js/gemini-api.js" HEAD
 git push --force
 ```
 
-Bu durumda **eski API anahtarını hemen revoke edin** ve yeni bir tane oluşturun.
+In this case, **immediately revoke the old API key** and create a new one.
 
 ---
 
-## 14. 📁 Proje Yapısı
+## 14. 📁 Project Structure
 
 ```
 vocabmaster/
-├── index.html              # Ana HTML dosyası — uygulama kabuğu (header, sidebar, main)
-├── README.md               # Bu dosya — kurulum rehberi
+├── index.html              # Main HTML file — app shell (header, sidebar, main)
+├── README.md               # This file — setup guide
 │
 ├── css/
-│   ├── style.css           # Ana stil dosyası — renk temaları, layout, tablolar, kartlar
-│   └── animations.css      # Animasyonlar — geçişler, hover efektleri, spinner
+│   ├── style.css           # Main stylesheet — color themes, layout, tables, cards
+│   └── animations.css      # Animations — transitions, hover effects, spinner
 │
 ├── js/
-│   ├── utils.js            # Sabitler, yardımcı fonksiyonlar (formatTime, escapeHtml, showToast vb.)
-│   ├── storage.js          # IndexedDB CRUD işlemleri — kelime, test, ayar yönetimi
-│   ├── gemini-api.js       # Gemini API entegrasyonu — kategorilendirme ve geri bildirim
-│   ├── excel-parser.js     # Excel dosyası okuma — akıllı sütun algılama ve ayrıştırma
-│   ├── learning-panel.js   # Kelime tablosu — filtreleme, sıralama, sayfalama, toplu işlemler
-│   ├── flashcards.js       # Flashcard görünümü — çevirme animasyonu, klavye kısayolları
-│   ├── test-engine.js      # Test motoru — soru gösterme, cevap kontrolü, zamanlayıcı
-│   ├── results.js          # Test sonuçları — skor daire grafiği, kelime detayları
-│   ├── user-dashboard.js   # Dashboard — istatistikler, test geçmişi, veri yönetimi
-│   └── app.js              # Ana uygulama — hash-based routing, tema, sidebar, başlatma
+│   ├── utils.js            # Constants, helper functions (formatTime, escapeHtml, showToast, etc.)
+│   ├── storage.js          # IndexedDB CRUD operations — word, test, settings management
+│   ├── gemini-api.js       # Gemini API integration — categorization and feedback
+│   ├── excel-parser.js     # Excel file reading — smart column detection and parsing
+│   ├── learning-panel.js   # Word table — filtering, sorting, pagination, bulk operations
+│   ├── flashcards.js       # Flashcard view — flip animation, keyboard shortcuts
+│   ├── test-engine.js      # Test engine — question display, answer checking, timer
+│   ├── results.js          # Test results — score donut chart, word details
+│   ├── user-dashboard.js   # Dashboard — statistics, test history, data management
+│   └── app.js              # Main app — hash-based routing, theme, sidebar, initialization
 │
 └── worker/
-    ├── index.js            # Cloudflare Worker kodu — Gemini API proxy
-    └── wrangler.toml       # Worker yapılandırma dosyası (Wrangler CLI için)
+    ├── index.js            # Cloudflare Worker code — Gemini API proxy
+    └── wrangler.toml       # Worker configuration file (for Wrangler CLI)
 ```
 
-### Dosya Yükleme Sırası (Önemli!)
+### Script Loading Order (Important!)
 
-`index.html` dosyasındaki `<script>` etiketleri belirli bir sırada yüklenmektedir. Bu sıra **bağımlılık zincirini** yansıtır:
+The `<script>` tags in the `index.html` file are loaded in a specific order. This order reflects the **dependency chain**:
 
 ```
-1. SheetJS (CDN) — Excel okuma kütüphanesi
-2. utils.js      — Sabitler ve yardımcı fonksiyonlar (tüm modüller kullanır)
-3. storage.js    — Veritabanı katmanı (diğer modüller kullanır)
-4. gemini-api.js — API katmanı (excel-parser ve test-engine kullanır)
+1. SheetJS (CDN) — Excel reading library
+2. utils.js      — Constants and helper functions (used by all modules)
+3. storage.js    — Database layer (used by other modules)
+4. gemini-api.js — API layer (used by excel-parser and test-engine)
 5. excel-parser.js
 6. learning-panel.js
 7. flashcards.js
 8. test-engine.js
 9. results.js
 10. user-dashboard.js
-11. app.js        — Son olarak yüklenir, her şeyi başlatır
+11. app.js        — Loaded last, initializes everything
 ```
 
 ---
 
-## 15. 🔄 Güncelleme Nasıl Yapılır
+## 15. 🔄 How to Update
 
-### Git ile Deploy Yapıyorsanız (Yöntem A)
+### If You're Deploying with Git (Method A)
 
-Kod değişikliklerınızı yaptıktan sonra:
+After making your code changes:
 
 ```bash
-# 1. Değişiklikleri kontrol edin
+# 1. Check changes
 git status
 
-# 2. Değişiklikleri staging'e ekleyin
+# 2. Add changes to staging
 git add .
 
-# 3. Commit oluşturun (açıklayıcı bir mesaj yazın)
-git commit -m "Yeni özellik: kelime silme eklendi"
+# 3. Create a commit (write a descriptive message)
+git commit -m "New feature: added word deletion"
 
-# 4. GitHub'a push edin
+# 4. Push to GitHub
 git push
 ```
 
-**Hepsi bu kadar!** Cloudflare otomatik olarak değişiklikleri algılar ve siteyi günceller. Deployment süreci genellikle 30-60 saniye sürer.
+**That's it!** Cloudflare will automatically detect the changes and update the site. The deployment process usually takes 30-60 seconds.
 
-Deployment durumunu kontrol etmek için:
-- Cloudflare Dashboard → Workers & Pages → `vocabmaster` → Deployments sekmesi.
-- [En son deployment'ın "Success" durumunda olduğunu göreceksiniz]
+To check the deployment status:
+- Cloudflare Dashboard → Workers & Pages → `vocabmaster` → Deployments tab.
+- [You will see the latest deployment in "Success" status]
 
-### Doğrudan Upload ile Deploy Yapıyorsanız (Yöntem B)
+### If You're Deploying with Direct Upload (Method B)
 
-1. Cloudflare Dashboard → Workers & Pages → `vocabmaster` projesine gidin.
-2. **"Create new deployment"** butonuna tıklayın.
-3. Güncellenmiş dosyaları tekrar yükleyin.
-4. **"Deploy Site"** butonuna tıklayın.
+1. Go to Cloudflare Dashboard → Workers & Pages → `vocabmaster` project.
+2. Click the **"Create new deployment"** button.
+3. Re-upload the updated files.
+4. Click the **"Deploy Site"** button.
 
-> 💡 **Öneri:** Sık güncelleme yapıyorsanız Git yöntemine (Yöntem A) geçmenizi şiddetle öneririz. Her güncelleme için tek yapmanız gereken `git push` komutudur.
+> 💡 **Recommendation:** If you update frequently, we strongly recommend switching to the Git method (Method A). All you need to do for each update is the `git push` command.
 
 ---
 
-## 📌 Hızlı Başvuru
+## 📌 Quick Reference
 
-Sık kullanılan bağlantılar ve komutlar:
+Frequently used links and commands:
 
-| Kaynak | URL / Komut |
-|--------|-------------|
-| 🌐 Canlı Site | `https://poofs.app` |
-| 🔧 API Proxy | `https://en-api.poofs.app` |
+| Resource | URL / Command |
+|----------|---------------|
+| 🌐 Live Site | `https://yourdomain.com` |
+| 🔧 API Proxy | `https://en-api.yourdomain.com` |
 | 📊 Cloudflare Dashboard | `https://dash.cloudflare.com` |
 | 🔑 Gemini API Keys | `https://aistudio.google.com/apikey` |
-| 📦 GitHub Repo | `https://github.com/alibeg-begow/test` |
-| 💻 Yerel Geliştirme | `http://127.0.0.1:5500` |
-| 🚀 Deploy (Git) | `git add . && git commit -m "mesaj" && git push` |
-| 🔐 Secret Güncelleme | `wrangler secret put GEMINI_API_KEY` |
+| 📦 GitHub Repo | `https://github.com/alibeg-begow/VocabMaster` |
+| 💻 Local Development | `http://127.0.0.1:5500` |
+| 🚀 Deploy (Git) | `git add . && git commit -m "message" && git push` |
+| 🔐 Secret Update | `wrangler secret put GEMINI_API_KEY` |
 
 ---
 
-> 📖 **Bu rehber, VocabMaster projesini sıfırdan canlı bir siteye dönüştürmek için gerekli tüm adımları kapsamaktadır. Herhangi bir sorunla karşılaşırsanız [Sorun Giderme](#12--sorun-giderme) bölümünü inceleyin.**
+> 📖 **This guide covers all the steps needed to take the VocabMaster project from scratch to a live site. If you encounter any issues, check the [Troubleshooting](#12--troubleshooting) section.**

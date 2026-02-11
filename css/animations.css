@@ -1,0 +1,308 @@
+/**
+ * @fileoverview Card flip animations, transitions, micro-interactions
+ */
+
+/* ═══════════════════════════════════════════════════════
+   FADE IN / PAGE TRANSITIONS
+   ═══════════════════════════════════════════════════════ */
+
+.fade-in {
+  animation: fadeIn 0.35s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-out {
+  animation: fadeOut 0.25s ease-in forwards;
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   FLASHCARD 3D FLIP
+   ═══════════════════════════════════════════════════════ */
+
+/* Flip transition and 3D styles are defined in style.css */
+/* Only flip-specific animation overrides go here */
+
+.flashcard-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+/* Card hover lift */
+.flashcard:hover .flashcard-inner:not(.flipped) {
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* ═══════════════════════════════════════════════════════
+   BUTTON HOVER EFFECTS
+   ═══════════════════════════════════════════════════════ */
+
+.btn {
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0);
+  transition: background 0.2s;
+}
+
+.btn:hover::after {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+/* Test mode card hover */
+.test-mode-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.test-mode-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+.test-mode-card:active {
+  transform: translateY(-2px);
+}
+
+/* ═══════════════════════════════════════════════════════
+   TABLE ROW HOVER
+   ═══════════════════════════════════════════════════════ */
+
+.word-row {
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.word-row:hover {
+  background: var(--bg-hover);
+}
+
+/* Sentence row expand animation */
+.sentence-row {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    max-height: 0;
+  }
+  to {
+    opacity: 1;
+    max-height: 500px;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   TOAST SLIDE IN/OUT
+   ═══════════════════════════════════════════════════════ */
+
+.toast {
+  animation: slideInRight 0.4s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.toast-exit {
+  animation: slideOutRight 0.4s ease-in forwards;
+}
+
+@keyframes slideOutRight {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   PROGRESS BAR ANIMATION
+   ═══════════════════════════════════════════════════════ */
+
+.progress-bar {
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ═══════════════════════════════════════════════════════
+   SCORE CIRCLE COUNT-UP
+   ═══════════════════════════════════════════════════════ */
+
+.score-fill {
+  transition: stroke-dashoffset 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ═══════════════════════════════════════════════════════
+   ANSWER FEEDBACK FLASH
+   ═══════════════════════════════════════════════════════ */
+
+.feedback-correct {
+  animation: flashGreen 0.5s ease;
+}
+
+@keyframes flashGreen {
+  0% { background: rgba(22, 163, 74, 0.3); }
+  100% { background: rgba(22, 163, 74, 0.1); }
+}
+
+.feedback-incorrect {
+  animation: flashRed 0.5s ease;
+}
+
+@keyframes flashRed {
+  0% { background: rgba(220, 38, 38, 0.3); }
+  100% { background: rgba(220, 38, 38, 0.1); }
+}
+
+/* ═══════════════════════════════════════════════════════
+   CHART BAR ANIMATION
+   ═══════════════════════════════════════════════════════ */
+
+.chart-bar {
+  animation: growUp 0.8s ease-out;
+}
+
+@keyframes growUp {
+  from {
+    height: 0 !important;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════
+   STAT CARD HOVER
+   ═══════════════════════════════════════════════════════ */
+
+.stat-card,
+.dash-stat-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover,
+.dash-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* ═══════════════════════════════════════════════════════
+   LOADING / SKELETON PULSE
+   ═══════════════════════════════════════════════════════ */
+
+.skeleton {
+  background: linear-gradient(90deg,
+    var(--bg-tertiary) 25%,
+    var(--bg-hover) 50%,
+    var(--bg-tertiary) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: var(--radius-sm);
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   DROPZONE PULSE
+   ═══════════════════════════════════════════════════════ */
+
+.upload-dropzone.dragover {
+  animation: dropzonePulse 1s ease-in-out infinite;
+}
+
+@keyframes dropzonePulse {
+  0%, 100% { border-color: var(--primary); background: rgba(26, 86, 219, 0.04); }
+  50% { border-color: var(--primary-light); background: rgba(26, 86, 219, 0.08); }
+}
+
+/* ═══════════════════════════════════════════════════════
+   NAV BUTTON RIPPLE
+   ═══════════════════════════════════════════════════════ */
+
+.nav-btn {
+  transition: all 0.2s ease;
+}
+
+.nav-btn:active {
+  transform: scale(0.92);
+}
+
+/* ═══════════════════════════════════════════════════════
+   CHIP PRESS
+   ═══════════════════════════════════════════════════════ */
+
+.chip {
+  transition: all 0.15s ease;
+}
+
+.chip:active {
+  transform: scale(0.95);
+}
+
+/* Card learned border glow */
+.flashcard.card-learned {
+  animation: learnedGlow 0.5s ease;
+}
+
+@keyframes learnedGlow {
+  0% { box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(5, 150, 105, 0.1); }
+  100% { box-shadow: 0 0 0 3px var(--secondary), var(--shadow-lg); }
+}
+
+/* ═══════════════════════════════════════════════════════
+   CATEGORY BADGE HOVER
+   ═══════════════════════════════════════════════════════ */
+
+.category-badge {
+  transition: all 0.2s ease;
+}
+
+.category-badge:hover {
+  background: rgba(26, 86, 219, 0.15);
+  transform: scale(1.05);
+}
+
+/* ═══════════════════════════════════════════════════════
+   SIDEBAR TRANSITION
+   ═══════════════════════════════════════════════════════ */
+
+.app-sidebar {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar-overlay {
+  transition: opacity 0.3s ease;
+  opacity: 0;
+}
+
+.sidebar-overlay.visible {
+  opacity: 1;
+}

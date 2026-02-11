@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="script-src 'self' https://cdn.sheetjs.com; style-src 'self' 'unsafe-inline'; connect-src 'self' https://generativelanguage.googleapis.com;">
+  <meta http-equiv="X-Frame-Options" content="DENY">
+  <title>📖 VocabMaster — English Vocabulary Learning</title>
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+
+  <!-- Favicon (inline emoji) -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+</head>
+<body>
+
+  <!-- ═══════════════ HEADER ═══════════════ -->
+  <header class="app-header">
+    <div class="header-left">
+      <button class="hamburger-btn" id="hamburger-btn" title="Toggle sidebar" aria-label="Toggle sidebar">☰</button>
+      <a class="app-logo" href="#/table">📖 VocabMaster</a>
+      <nav class="top-nav">
+        <a class="top-nav-link active" data-route="learning" href="#/table" data-nav="table">Learning Panel</a>
+        <a class="top-nav-link" data-route="test" href="#/test" data-nav="test">Tests</a>
+        <a class="top-nav-link" data-route="dashboard" href="#/dashboard" data-nav="dashboard">Dashboard</a>
+      </nav>
+    </div>
+    <div class="header-right">
+      <span class="word-count-badge" id="word-count-badge" title="Total words">0</span>
+      <button id="theme-toggle" title="Switch theme" aria-label="Switch theme">🌙</button>
+    </div>
+  </header>
+
+  <!-- ═══════════════ SIDEBAR ═══════════════ -->
+  <aside class="app-sidebar" id="sidebar">
+    <a class="sidebar-nav-item active" data-route="table" href="#/table">
+      <span class="nav-icon">📚</span> Word Table
+    </a>
+    <a class="sidebar-nav-item" data-route="flashcards" href="#/flashcards">
+      <span class="nav-icon">🃏</span> Flashcards
+    </a>
+    <a class="sidebar-nav-item" data-route="upload" href="#/upload">
+      <span class="nav-icon">📤</span> Upload Words
+    </a>
+    <a class="sidebar-nav-item" data-route="test" href="#/test">
+      <span class="nav-icon">📝</span> Tests
+    </a>
+    <a class="sidebar-nav-item" data-route="dashboard" href="#/dashboard">
+      <span class="nav-icon">📊</span> Dashboard
+    </a>
+  </aside>
+
+  <!-- Sidebar overlay (mobile) -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <!-- ═══════════════ MAIN CONTENT ═══════════════ -->
+  <main class="app-main" id="main-content" aria-live="polite">
+    <!-- Content injected by JavaScript routing -->
+    <div class="empty-state-full fade-in">
+      <div class="spinner spinner-large"></div>
+      <p>Loading VocabMaster...</p>
+    </div>
+  </main>
+
+  <!-- ═══════════════ TOAST CONTAINER ═══════════════ -->
+  <div class="toast-container" id="toast-container" aria-live="assertive" role="status"></div>
+
+  <!-- ═══════════════ SCRIPTS ═══════════════ -->
+  <!-- SheetJS for Excel parsing (CDN) -->
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"
+          integrity="sha384-7hwyYzxURfZMLwHgvEKrYEmM5tX+1DVWK5iDR4R69bOQeY90Q8B8n9Cobuyqybhw"
+          crossorigin="anonymous"></script>
+
+  <!-- App modules (order matters — dependencies first) -->
+  <script src="js/utils.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/gemini-api.js"></script>
+  <script src="js/excel-parser.js"></script>
+  <script src="js/learning-panel.js"></script>
+  <script src="js/flashcards.js"></script>
+  <script src="js/test-engine.js"></script>
+  <script src="js/results.js"></script>
+  <script src="js/user-dashboard.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
